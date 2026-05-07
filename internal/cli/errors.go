@@ -50,4 +50,3 @@ func suggestionFor(err error, message string) string {
 		return fmt.Sprintf("Run %s for command options.", textui.Command("gitu --help"))
 	}
 }
-

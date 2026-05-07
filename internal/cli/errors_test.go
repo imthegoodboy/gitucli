@@ -15,4 +15,3 @@ func TestFormatCLIErrorIncludesSuggestion(t *testing.T) {
 		t.Fatalf("missing useful suggestion: %s", got)
 	}
 }
-
