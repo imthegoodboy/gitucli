@@ -1,6 +1,6 @@
 ---
 name: gitucli-identity-guard
-description: Guide for modifying gituCli, a Go CLI that isolates multiple GitHub accounts per repository. Use when working on gituCli identity profiles, local Git config, SSH alias routing, remote URL rewriting, Git hooks, validation, repair, daemon behavior, tests, or documentation.
+description: Guide for modifying gituCli, a Go CLI that isolates multiple GitHub accounts per repository. Use when working on gituCli identity profiles, local Git config, SSH alias routing, remote URL rewriting, Git hooks, validation, repair, daemon behavior, autocommit, tests, or documentation.
 ---
 
 # gituCli Identity Guard
@@ -18,6 +18,7 @@ Use this skill to preserve the central safety promise of gituCli: one repository
 - Keep SSH aliases unique and profile-specific, such as `github-work` or `github-client`.
 - Rewrite managed GitHub remotes to `git@<alias>:owner/repo.git`.
 - Hooks must block by default on identity mismatch.
+- Autocommit must validate identity before staging or committing.
 
 ## Implementation Workflow
 
@@ -34,6 +35,7 @@ Use this skill to preserve the central safety promise of gituCli: one repository
 - Test storage with temporary SQLite databases.
 - Test integration flows with temporary Git repositories whenever behavior crosses Git config, remotes, hooks, and storage.
 - For guard changes, include failure cases that prove commits or pushes are blocked when the profile email or remote alias drifts.
+- For autocommit changes, test dry-run/no-change behavior and a real dummy commit with an isolated database.
 
 ## Documentation Pointers
 
