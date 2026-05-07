@@ -51,6 +51,7 @@ func newRootCommand(env *commandEnv) *cobra.Command {
 	root.AddCommand(newRepairCommand(env))
 	root.AddCommand(newGuardCommand(env))
 	root.AddCommand(newDaemonCommand(env))
+	root.AddCommand(newAutoCommitCommand(env))
 	return root
 }
 
@@ -444,6 +445,118 @@ func newDaemonCommand(env *commandEnv) *cobra.Command {
 	cmd.Flags().DurationVar(&interval, "interval", 30*time.Second, "validation interval")
 	cmd.Flags().BoolVar(&once, "once", false, "run one sweep and exit")
 	return cmd
+}
+
+func newAutoCommitCommand(env *commandEnv) *cobra.Command {
+	var message, atClock, remoteName string
+	var interval time.Duration
+	var push, dryRun bool
+
+	cmd := &cobra.Command{
+		Use:   "autocommit [path]",
+		Short: "Safely commit repo changes now, on a clock time, or repeatedly",
+		Args:  cobra.MaximumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			path := "."
+			if len(args) == 1 {
+				path = args[0]
+			}
+			svc, closeFn, err := openService(cmd.Context(), env)
+			if err != nil {
+				return err
+			}
+			defer closeFn()
+
+			run := func() error {
+				result, err := svc.AutoCommitOnce(cmd.Context(), core.AutoCommitOptions{
+					RepoPath:   path,
+					Message:    message,
+					Push:       push && !dryRun,
+					RemoteName: remoteName,
+				})
+				if dryRun {
+					printAutoCommitDryRun(env.out, result, err)
+					return err
+				}
+				printAutoCommitResult(env.out, result, err)
+				return err
+			}
+
+			if atClock != "" {
+				delay, err := core.NextClockDelay(time.Now(), atClock)
+				if err != nil {
+					return err
+				}
+				if delay > 0 {
+					fmt.Fprintf(env.out, "%s waiting %s until %s\n", textui.Muted("[WAIT]"), delay.Round(time.Second), atClock)
+					timer := time.NewTimer(delay)
+					defer timer.Stop()
+					select {
+					case <-cmd.Context().Done():
+						return nil
+					case <-timer.C:
+					}
+				}
+			}
+
+			if interval <= 0 {
+				return run()
+			}
+			if err := run(); err != nil {
+				return err
+			}
+			ticker := time.NewTicker(interval)
+			defer ticker.Stop()
+			for {
+				select {
+				case <-cmd.Context().Done():
+					return nil
+				case <-ticker.C:
+					if err := run(); err != nil {
+						fmt.Fprintln(env.errOut, err)
+					}
+				}
+			}
+		},
+	}
+	cmd.Flags().StringVarP(&message, "message", "m", "", "commit message; defaults to timestamped auto commit")
+	cmd.Flags().StringVar(&atClock, "at", "", "wait until the next HH:MM local time before first commit")
+	cmd.Flags().DurationVar(&interval, "interval", 0, "repeat after this duration, for example 30m or 2h")
+	cmd.Flags().BoolVar(&push, "push", false, "push after a successful commit")
+	cmd.Flags().StringVar(&remoteName, "remote", "origin", "remote to push when --push is used")
+	cmd.Flags().BoolVar(&dryRun, "dry-run", false, "validate and show pending changes without committing")
+	return cmd
+}
+
+func printAutoCommitResult(w io.Writer, result core.AutoCommitResult, err error) {
+	if err != nil {
+		fmt.Fprintf(w, "%s autocommit failed for %s: %s\n", textui.Error("[FAIL]"), result.RepoPath, err)
+		return
+	}
+	if result.Skipped {
+		fmt.Fprintf(w, "%s no changes to commit in %s\n", textui.Muted("[SKIP]"), result.RepoPath)
+		return
+	}
+	fmt.Fprintf(w, "%s committed %d change(s) in %s\n", textui.Success("[OK]"), len(result.StatusBefore), result.RepoPath)
+	fmt.Fprintf(w, "%s %s\n", textui.Muted("Message:"), result.CommitMessage)
+	if result.Pushed {
+		fmt.Fprintf(w, "%s pushed to remote\n", textui.Success("[OK]"))
+	}
+}
+
+func printAutoCommitDryRun(w io.Writer, result core.AutoCommitResult, err error) {
+	if err != nil {
+		fmt.Fprintf(w, "%s dry run failed for %s: %s\n", textui.Error("[FAIL]"), result.RepoPath, err)
+		return
+	}
+	if len(result.StatusBefore) == 0 {
+		fmt.Fprintf(w, "%s no changes to commit in %s\n", textui.Muted("[DRY-RUN]"), result.RepoPath)
+		return
+	}
+	fmt.Fprintf(w, "%s %d pending change(s) in %s\n", textui.Muted("[DRY-RUN]"), len(result.StatusBefore), result.RepoPath)
+	for _, line := range result.StatusBefore {
+		fmt.Fprintf(w, "  %s\n", line)
+	}
 }
 
 func openService(ctx context.Context, env *commandEnv) (*core.Service, func(), error) {

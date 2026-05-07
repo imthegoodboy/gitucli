@@ -22,6 +22,7 @@ func (m model) View() string {
 		Command("gitu profile add") + "          Add a GitHub identity profile",
 		Command("gitu validate [path]") + "      Check repo identity safety",
 		Command("gitu repair [path]") + "        Restore managed repo settings",
+		Command("gitu autocommit [path]") + "    Commit changes safely on demand or schedule",
 		Command("gitu key generate <name>") + "  Generate an SSH key",
 		Command("gitu daemon") + "               Watch configured repos",
 	}
