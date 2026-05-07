@@ -25,14 +25,15 @@ type commandEnv struct {
 }
 
 func Execute() error {
-	return newRootCommand(commandEnv{
+	env := &commandEnv{
 		in:     os.Stdin,
 		out:    os.Stdout,
 		errOut: os.Stderr,
-	}).Execute()
+	}
+	return newRootCommand(env).Execute()
 }
 
-func newRootCommand(env commandEnv) *cobra.Command {
+func newRootCommand(env *commandEnv) *cobra.Command {
 	root := &cobra.Command{
 		Use:   "gitu",
 		Short: "Multi GitHub identity manager",
@@ -53,7 +54,7 @@ func newRootCommand(env commandEnv) *cobra.Command {
 	return root
 }
 
-func newInitCommand(env commandEnv) *cobra.Command {
+func newInitCommand(env *commandEnv) *cobra.Command {
 	var profileName, githubUser, gitName, email, keyPath, alias, remoteName, repoSlug string
 	var generateKey bool
 
@@ -145,7 +146,7 @@ func newInitCommand(env commandEnv) *cobra.Command {
 	return cmd
 }
 
-func newProfileCommand(env commandEnv) *cobra.Command {
+func newProfileCommand(env *commandEnv) *cobra.Command {
 	cmd := &cobra.Command{Use: "profile", Short: "Manage identity profiles"}
 	cmd.AddCommand(newProfileAddCommand(env))
 	cmd.AddCommand(newProfileListCommand(env))
@@ -154,7 +155,7 @@ func newProfileCommand(env commandEnv) *cobra.Command {
 	return cmd
 }
 
-func newProfileAddCommand(env commandEnv) *cobra.Command {
+func newProfileAddCommand(env *commandEnv) *cobra.Command {
 	var name, githubUser, gitName, email, keyPath, alias string
 	cmd := &cobra.Command{
 		Use:   "add",
@@ -199,7 +200,7 @@ func newProfileAddCommand(env commandEnv) *cobra.Command {
 	return cmd
 }
 
-func newProfileListCommand(env commandEnv) *cobra.Command {
+func newProfileListCommand(env *commandEnv) *cobra.Command {
 	return &cobra.Command{
 		Use:   "list",
 		Short: "List profiles",
@@ -223,7 +224,7 @@ func newProfileListCommand(env commandEnv) *cobra.Command {
 	}
 }
 
-func newProfileShowCommand(env commandEnv) *cobra.Command {
+func newProfileShowCommand(env *commandEnv) *cobra.Command {
 	return &cobra.Command{
 		Use:   "show <name>",
 		Short: "Show one profile",
@@ -245,7 +246,7 @@ func newProfileShowCommand(env commandEnv) *cobra.Command {
 	}
 }
 
-func newProfileRemoveCommand(env commandEnv) *cobra.Command {
+func newProfileRemoveCommand(env *commandEnv) *cobra.Command {
 	return &cobra.Command{
 		Use:   "remove <name>",
 		Short: "Remove an unused profile",
@@ -268,7 +269,7 @@ func newProfileRemoveCommand(env commandEnv) *cobra.Command {
 	}
 }
 
-func newKeyCommand(env commandEnv) *cobra.Command {
+func newKeyCommand(env *commandEnv) *cobra.Command {
 	cmd := &cobra.Command{Use: "key", Short: "Manage SSH keys"}
 	var force bool
 	gen := &cobra.Command{
@@ -294,7 +295,7 @@ func newKeyCommand(env commandEnv) *cobra.Command {
 	return cmd
 }
 
-func newValidateCommand(env commandEnv) *cobra.Command {
+func newValidateCommand(env *commandEnv) *cobra.Command {
 	return &cobra.Command{
 		Use:   "validate [path]",
 		Short: "Validate repo identity safety",
@@ -322,7 +323,7 @@ func newValidateCommand(env commandEnv) *cobra.Command {
 	}
 }
 
-func newRepairCommand(env commandEnv) *cobra.Command {
+func newRepairCommand(env *commandEnv) *cobra.Command {
 	return &cobra.Command{
 		Use:   "repair [path]",
 		Short: "Repair managed repo identity settings",
@@ -350,7 +351,7 @@ func newRepairCommand(env commandEnv) *cobra.Command {
 	}
 }
 
-func newGuardCommand(env commandEnv) *cobra.Command {
+func newGuardCommand(env *commandEnv) *cobra.Command {
 	var repoPath string
 	cmd := &cobra.Command{
 		Use:   "guard <pre-commit|pre-push>",
@@ -384,7 +385,7 @@ func newGuardCommand(env commandEnv) *cobra.Command {
 	return cmd
 }
 
-func newDaemonCommand(env commandEnv) *cobra.Command {
+func newDaemonCommand(env *commandEnv) *cobra.Command {
 	var interval time.Duration
 	var once bool
 	cmd := &cobra.Command{
@@ -436,7 +437,7 @@ func newDaemonCommand(env commandEnv) *cobra.Command {
 	return cmd
 }
 
-func openService(ctx context.Context, env commandEnv) (*core.Service, func(), error) {
+func openService(ctx context.Context, env *commandEnv) (*core.Service, func(), error) {
 	dbPath := env.dbPath
 	var err error
 	if dbPath == "" {
