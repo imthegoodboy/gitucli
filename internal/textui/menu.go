@@ -35,11 +35,6 @@ func (m model) View() string {
 }
 
 func Render(w io.Writer) error {
-	program := tea.NewProgram(model{}, tea.WithOutput(w), tea.WithoutRenderer())
-	m, err := program.Run()
-	if err != nil {
-		return err
-	}
-	_, err = fmt.Fprint(w, m.View())
+	_, err := fmt.Fprint(w, model{}.View())
 	return err
 }
