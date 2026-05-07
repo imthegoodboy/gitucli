@@ -140,7 +140,7 @@ func (s *Service) ConfigureRepo(ctx context.Context, opts InitOptions) (Report, 
 	if err := gitutil.RemoteSetURL(ctx, repoPath, opts.RemoteName, expectedRemote); err != nil {
 		return Report{}, err
 	}
-	if err := hooks.Install(ctx, repoPath, s.ExePath); err != nil {
+	if err := hooks.Install(ctx, repoPath, s.ExePath, s.Store.Path()); err != nil {
 		return Report{}, err
 	}
 	if err := s.SyncSSHConfig(ctx); err != nil {
@@ -245,7 +245,7 @@ func (s *Service) RepairRepo(ctx context.Context, path string) (Report, error) {
 	if err := gitutil.RemoteSetURL(ctx, repoPath, mapping.RemoteName, mapping.ExpectedRemote); err != nil {
 		return Report{}, err
 	}
-	if err := hooks.Install(ctx, repoPath, s.ExePath); err != nil {
+	if err := hooks.Install(ctx, repoPath, s.ExePath, s.Store.Path()); err != nil {
 		return Report{}, err
 	}
 	if err := s.SyncSSHConfig(ctx); err != nil {
@@ -277,7 +277,7 @@ func (s *Service) DaemonSweep(ctx context.Context) ([]Report, error) {
 		}
 		for _, issue := range report.Issues {
 			if strings.HasPrefix(issue.Code, "hook_missing_") {
-				_ = hooks.Install(ctx, mapping.RepoPath, s.ExePath)
+				_ = hooks.Install(ctx, mapping.RepoPath, s.ExePath, s.Store.Path())
 				report, _ = s.ValidateRepo(ctx, mapping.RepoPath)
 				break
 			}

@@ -17,7 +17,8 @@ const appDirName = "gituCli"
 var ErrNotFound = errors.New("not found")
 
 type Store struct {
-	db *sql.DB
+	db   *sql.DB
+	path string
 }
 
 type Profile struct {
@@ -73,7 +74,7 @@ func Open(ctx context.Context, dbPath string) (*Store, error) {
 		return nil, err
 	}
 
-	s := &Store{db: db}
+	s := &Store{db: db, path: dbPath}
 	if _, err := s.db.ExecContext(ctx, "PRAGMA foreign_keys = ON"); err != nil {
 		_ = db.Close()
 		return nil, err
@@ -83,6 +84,13 @@ func Open(ctx context.Context, dbPath string) (*Store, error) {
 		return nil, err
 	}
 	return s, nil
+}
+
+func (s *Store) Path() string {
+	if s == nil {
+		return ""
+	}
+	return s.path
 }
 
 func (s *Store) Close() error {
