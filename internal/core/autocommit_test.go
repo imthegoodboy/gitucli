@@ -24,4 +24,3 @@ func TestNextClockDelay(t *testing.T) {
 		t.Fatalf("unexpected next-day delay: %s", delay)
 	}
 }
-

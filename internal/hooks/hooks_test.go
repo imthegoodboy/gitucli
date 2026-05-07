@@ -18,4 +18,3 @@ func TestScriptOmitsDBFlagWhenEmpty(t *testing.T) {
 		t.Fatalf("script should not include db flag:\n%s", body)
 	}
 }
-
