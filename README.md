@@ -88,3 +88,4 @@ Each repo gets its own local Git email and its own SSH alias remote. You can com
 - `docs/IDENTITY_MODEL.md`: how contribution identity and SSH routing work.
 - `docs/OPERATIONS.md`: validate, repair, daemon, and troubleshooting.
 - `docs/END_TO_END_FLOW.md`: safe dummy-project test flow.
+- `docs/AUDIT_REPORT.md`: latest audit checklist and verification summary.
