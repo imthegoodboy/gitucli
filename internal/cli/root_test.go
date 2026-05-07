@@ -53,3 +53,18 @@ func TestPersistentDBFlagAppliesToSubcommands(t *testing.T) {
 		t.Fatalf("profile was not saved in custom DB: %#v", profile)
 	}
 }
+
+func TestRootCommandRunsInteractiveShellAndExits(t *testing.T) {
+	var out, errOut bytes.Buffer
+	root := newRootCommand(&commandEnv{
+		in:     bytes.NewBufferString("0\n"),
+		out:    &out,
+		errOut: &errOut,
+	})
+	if err := root.Execute(); err != nil {
+		t.Fatalf("interactive root failed: %v\nstderr: %s", err, errOut.String())
+	}
+	if !strings.Contains(out.String(), "Setup a repo") {
+		t.Fatalf("interactive menu did not render expected options:\n%s", out.String())
+	}
+}
