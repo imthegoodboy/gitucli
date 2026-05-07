@@ -376,4 +376,3 @@ func DefaultKeyPath(profileName string) string {
 	}
 	return filepath.Join(home, ".ssh", "gitu_"+profileName)
 }
-

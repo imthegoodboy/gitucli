@@ -42,4 +42,3 @@ func TestParseSlug(t *testing.T) {
 		t.Fatalf("unexpected slug: %s", parsed.Slug())
 	}
 }
-

@@ -39,4 +39,3 @@ func TestUpdatePreservesUserConfigAndReplacesManagedBlock(t *testing.T) {
 		t.Fatalf("new managed alias missing:\n%s", text)
 	}
 }
-

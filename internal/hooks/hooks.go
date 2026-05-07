@@ -61,4 +61,3 @@ repo="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 exec "%s" guard %s --repo "$repo"
 `, marker, exePath, event)
 }
-

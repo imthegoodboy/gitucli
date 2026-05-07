@@ -43,4 +43,3 @@ func Render(w io.Writer) error {
 	_, err = fmt.Fprint(w, m.View())
 	return err
 }
-

@@ -114,4 +114,3 @@ func touchKey(t *testing.T, name string) string {
 	}
 	return path
 }
-

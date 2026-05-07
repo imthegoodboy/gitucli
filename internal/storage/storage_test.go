@@ -46,4 +46,3 @@ func TestProfilesAndRepoMappings(t *testing.T) {
 		t.Fatalf("unexpected expected remote: %s", got.ExpectedRemote)
 	}
 }
-

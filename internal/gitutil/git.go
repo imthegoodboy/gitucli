@@ -124,4 +124,3 @@ func IsGitUnavailable(err error) bool {
 	var execErr *exec.Error
 	return errors.As(err, &execErr)
 }
-

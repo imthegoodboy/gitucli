@@ -94,4 +94,3 @@ func normalize(host, owner, repo string) (GitHubRemote, error) {
 
 	return GitHubRemote{Host: host, Owner: owner, Repo: repo}, nil
 }
-

@@ -17,7 +17,7 @@ const (
 )
 
 type Entry struct {
-	Alias       string
+	Alias        string
 	IdentityFile string
 }
 
