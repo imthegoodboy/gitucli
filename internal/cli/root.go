@@ -473,6 +473,7 @@ func newAutoCommitCommand(env *commandEnv) *cobra.Command {
 					Message:    message,
 					Push:       push && !dryRun,
 					RemoteName: remoteName,
+					DryRun:     dryRun,
 				})
 				if dryRun {
 					printAutoCommitDryRun(env.out, result, err)

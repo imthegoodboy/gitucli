@@ -14,6 +14,7 @@ type AutoCommitOptions struct {
 	Message    string
 	Push       bool
 	RemoteName string
+	DryRun     bool
 }
 
 type AutoCommitResult struct {
@@ -55,6 +56,10 @@ func (s *Service) AutoCommitOnce(ctx context.Context, opts AutoCommitOptions) (A
 		result.Skipped = true
 		return result, nil
 	}
+	if opts.DryRun {
+		result.ValidationOnly = true
+		return result, nil
+	}
 
 	if err := gitutil.AddAll(ctx, report.RepoPath); err != nil {
 		return result, err
@@ -92,4 +97,3 @@ func NextClockDelay(now time.Time, clock string) (time.Duration, error) {
 	}
 	return next.Sub(now), nil
 }
-
