@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/parth/gitucli/internal/core"
 	"github.com/parth/gitucli/internal/storage"
