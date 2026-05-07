@@ -7,6 +7,12 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+type MenuRow struct {
+	Index       string
+	Command     string
+	Description string
+}
+
 var (
 	titleStyle = lipgloss.NewStyle().
 			Bold(true).
@@ -91,5 +97,45 @@ func ErrorPanel(title, message, suggestion string) string {
 		lines = append(lines, "| "+Muted("Next:")+" "+suggestion)
 	}
 	lines = append(lines, "+------------------------------------------------------------+")
+	return strings.Join(lines, "\n")
+}
+
+func Dashboard(rows []MenuRow) string {
+	banner := strings.Join([]string{
+		"   ____ ___ _____ _   _ ",
+		"  / ___|_ _|_   _| | | |",
+		" | |  _ | |  | | | | | |",
+		" | |_| || |  | | | |_| |",
+		"  \\____|___| |_|  \\___/ ",
+	}, "\n")
+	body := []string{
+		Title(banner),
+		Muted("Multi GitHub Identity Manager"),
+		Muted("one repo = one GitHub identity"),
+		"",
+		renderRows(rows),
+		"",
+		KeyValue("Storage", "SQLite metadata, no passwords or tokens"),
+		KeyValue("Mode", "guided app shell"),
+	}
+	return strings.Join(body, "\n") + "\n"
+}
+
+func Page(title string, rows []MenuRow) string {
+	return Section(title) + "\n\n" + renderRows(rows) + "\n"
+}
+
+func Section(title string) string {
+	return Title(title)
+}
+
+func renderRows(rows []MenuRow) string {
+	lines := make([]string, 0, len(rows))
+	for _, row := range rows {
+		lines = append(lines, fmt.Sprintf("%s %s %s",
+			Muted("["+row.Index+"]"),
+			Command(fmt.Sprintf("%-28s", row.Command)),
+			row.Description))
+	}
 	return strings.Join(lines, "\n")
 }
