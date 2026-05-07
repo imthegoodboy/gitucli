@@ -30,6 +30,16 @@ Add `bin` to your PATH, or call the binary by absolute path.
 
 ## Quick Start
 
+Run the guided app:
+
+```powershell
+gitu
+```
+
+The menu walks you through setup, profiles, repo validation, repair, autocommit, and daemon checks one question at a time.
+
+You can still use direct commands when scripting or moving fast.
+
 Create or attach a profile and configure a repo:
 
 ```powershell

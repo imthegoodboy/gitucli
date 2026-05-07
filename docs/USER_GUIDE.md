@@ -54,6 +54,27 @@ Now test the binary:
 
 You should see the command menu.
 
+## 1.5. Use The Guided Menu
+
+The easiest way to use gituCli is just:
+
+```powershell
+.\bin\gitu.exe
+```
+
+This opens the guided app shell. You choose a page, then gituCli asks the needed questions one by one.
+
+Main pages:
+
+- Setup a repo
+- Profiles
+- Repo tools
+- Autocommit
+- Daemon sweep
+- Help
+
+The direct commands still work, but you do not have to remember them for daily use.
+
 ## 2. Understand SSH Keys
 
 An SSH key has two files:

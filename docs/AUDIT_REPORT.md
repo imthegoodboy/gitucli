@@ -21,6 +21,7 @@ Verified:
 - Autocommit dry-run and commit flow pass in a dummy repo.
 - Project-local agent skill validates.
 - CLI root menu exits cleanly in non-interactive terminals.
+- Plain `gitu` now opens a guided app shell with pages and prompts.
 - CLI output has clearer colored statuses for success, failure, commands, prompts, and guard errors.
 - CLI errors are centralized into a readable failure panel with next-step suggestions.
 - Scheduled autocommit waits show an animated terminal indicator.
