@@ -18,6 +18,7 @@ Verified:
 
 - Go project builds successfully.
 - Unit tests pass across CLI, core service, remote parsing, SSH config, and SQLite storage.
+- Autocommit dry-run and commit flow pass in a dummy repo.
 - Project-local agent skill validates.
 - CLI root menu exits cleanly in non-interactive terminals.
 - CLI output has clearer colored statuses for success, failure, commands, prompts, and guard errors.
@@ -45,6 +46,19 @@ Verified:
 - guard blocks repo A after intentionally changing its local email to `wrong@example.com`
 - repair restores repo A to the correct email
 - daemon `--once` reports both configured repos as OK
+
+## Advanced Feature Audit
+
+Added and verified `gitu autocommit`:
+
+- validates repo identity before committing
+- supports `--message`
+- supports `--dry-run`
+- supports `--at HH:MM`
+- supports repeated `--interval`
+- supports optional `--push`
+- skips clean repos without creating empty commits
+- preserves custom `--db` paths inside installed Git hook scripts
 
 ## Commands Run
 

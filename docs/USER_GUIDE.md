@@ -372,3 +372,32 @@ git push
 
 Use gituCli when adding a new repo, adding a new identity, validating, or repairing.
 
+## Advanced: Auto Commit
+
+You can ask gituCli to commit changes safely after validation.
+
+Commit once:
+
+```powershell
+.\bin\gitu.exe autocommit C:\path\to\repo --message "checkpoint"
+```
+
+Check first without committing:
+
+```powershell
+.\bin\gitu.exe autocommit C:\path\to\repo --message "checkpoint" --dry-run
+```
+
+Commit every 30 minutes:
+
+```powershell
+.\bin\gitu.exe autocommit C:\path\to\repo --message "checkpoint" --interval 30m
+```
+
+Commit at a specific local time:
+
+```powershell
+.\bin\gitu.exe autocommit C:\path\to\repo --message "night checkpoint" --at 22:30
+```
+
+More details are in `docs/AUTOCOMMIT.md`.

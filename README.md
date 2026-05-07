@@ -61,6 +61,8 @@ gitu profile list
 gitu key generate startup
 gitu validate C:\path\to\project
 gitu repair C:\path\to\project
+gitu autocommit C:\path\to\project --message "checkpoint"
+gitu autocommit C:\path\to\project --message "checkpoint" --interval 30m
 gitu daemon
 ```
 
@@ -86,6 +88,7 @@ Each repo gets its own local Git email and its own SSH alias remote. You can com
 ## More Docs
 
 - `docs/USER_GUIDE.md`: step-by-step beginner guide for setup, SSH keys, GitHub, repos, validate, repair, and daily use.
+- `docs/AUTOCOMMIT.md`: timed and repeated safe auto-commit workflow.
 - `docs/IDENTITY_MODEL.md`: how contribution identity and SSH routing work.
 - `docs/OPERATIONS.md`: validate, repair, daemon, and troubleshooting.
 - `docs/END_TO_END_FLOW.md`: safe dummy-project test flow.
