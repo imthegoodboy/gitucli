@@ -96,14 +96,16 @@ func GenerateKey(ctx context.Context, keyPath, email string, force bool) error {
 	if _, err := os.Stat(keyPath); err == nil && !force {
 		return fmt.Errorf("SSH key already exists at %s", keyPath)
 	}
+	if force {
+		_ = os.Remove(keyPath)
+		_ = os.Remove(keyPath + ".pub")
+	}
 	if err := os.MkdirAll(filepath.Dir(keyPath), 0o700); err != nil {
 		return err
 	}
 
 	args := []string{"-t", "ed25519", "-C", email, "-f", keyPath, "-N", ""}
-	if force {
-		args = append(args, "-q")
-	}
+	args = append(args, "-q")
 	cmd := exec.CommandContext(ctx, "ssh-keygen", args...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
@@ -145,4 +147,3 @@ func replaceBlock(existing, block string) string {
 	}
 	return strings.TrimRight(existing, "\n") + "\n\n" + block
 }
-
