@@ -57,9 +57,13 @@ type Report struct {
 }
 
 func NewService(store *storage.Store) (*Service, error) {
-	sshPath, err := sshconfig.DefaultPath()
-	if err != nil {
-		return nil, err
+	sshPath := os.Getenv("GITU_SSH_CONFIG")
+	if sshPath == "" {
+		var err error
+		sshPath, err = sshconfig.DefaultPath()
+		if err != nil {
+			return nil, err
+		}
 	}
 	exePath, err := os.Executable()
 	if err != nil {
