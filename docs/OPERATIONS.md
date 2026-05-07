@@ -55,6 +55,7 @@ gitu daemon --once
 - Git hooks are POSIX shell scripts executed by Git for Windows.
 - Hook scripts call the installed `gitu.exe` path captured during `gitu init` or `gitu repair`.
 - If you move the binary, run `gitu repair` for each repo so hooks point to the new binary path.
+- Tests and CI can set `GITU_HOME` and `GITU_SSH_CONFIG` to avoid touching real user config.
 
 ## Troubleshooting
 
@@ -64,4 +65,3 @@ If a commit or push is blocked:
 2. Run `gitu repair` if the issue is repairable.
 3. Confirm the profile email is verified on the intended GitHub account.
 4. Confirm the profile `.pub` key is added to that GitHub account.
-
