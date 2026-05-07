@@ -85,6 +85,7 @@ Each repo gets its own local Git email and its own SSH alias remote. You can com
 
 ## More Docs
 
+- `docs/USER_GUIDE.md`: step-by-step beginner guide for setup, SSH keys, GitHub, repos, validate, repair, and daily use.
 - `docs/IDENTITY_MODEL.md`: how contribution identity and SSH routing work.
 - `docs/OPERATIONS.md`: validate, repair, daemon, and troubleshooting.
 - `docs/END_TO_END_FLOW.md`: safe dummy-project test flow.
