@@ -27,7 +27,7 @@ var (
 			Foreground(lipgloss.Color("245"))
 	commandStyle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color("81"))
-			.Bold(true)
+	commandBoldStyle = commandStyle.Bold(true)
 )
 
 func Title(value string) string {
@@ -55,7 +55,7 @@ func Muted(value string) string {
 }
 
 func Command(value string) string {
-	return commandStyle.Render(value)
+	return commandBoldStyle.Render(value)
 }
 
 func Status(ok bool) string {
