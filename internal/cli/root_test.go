@@ -53,4 +53,3 @@ func TestPersistentDBFlagAppliesToSubcommands(t *testing.T) {
 		t.Fatalf("profile was not saved in custom DB: %#v", profile)
 	}
 }
-
