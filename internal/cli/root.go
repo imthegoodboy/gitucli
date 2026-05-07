@@ -45,7 +45,7 @@ func newRootCommand(env *commandEnv) *cobra.Command {
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return textui.Render(env.out)
+			return runInteractiveShell(cmd.Context(), env)
 		},
 	}
 	root.PersistentFlags().StringVar(&env.dbPath, "db", "", "override gitu SQLite database path")
