@@ -78,7 +78,7 @@ func newInitCommand(env commandEnv) *cobra.Command {
 			defer closeFn()
 
 			reader := bufio.NewReader(env.in)
-			profileName = promptDefault(reader, env.out, "Profile name", profileName)
+			profileName = promptMissing(reader, env.out, "Profile name", profileName, "")
 			if strings.TrimSpace(profileName) == "" {
 				return fmt.Errorf("profile name is required")
 			}
@@ -88,11 +88,11 @@ func newInitCommand(env commandEnv) *cobra.Command {
 				if !errors.Is(err, storage.ErrNotFound) {
 					return err
 				}
-				githubUser = promptDefault(reader, env.out, "GitHub username", defaultString(githubUser, profileName))
-				gitName = promptDefault(reader, env.out, "Git commit name", defaultString(gitName, githubUser))
-				email = promptDefault(reader, env.out, "Git commit email", email)
-				keyPath = promptDefault(reader, env.out, "SSH key path", defaultString(keyPath, core.DefaultKeyPath(profileName)))
-				alias = promptDefault(reader, env.out, "SSH alias", defaultString(alias, core.DefaultAlias(githubUser)))
+				githubUser = promptMissing(reader, env.out, "GitHub username", githubUser, profileName)
+				gitName = promptMissing(reader, env.out, "Git commit name", gitName, githubUser)
+				email = promptMissing(reader, env.out, "Git commit email", email, "")
+				keyPath = promptMissing(reader, env.out, "SSH key path", keyPath, core.DefaultKeyPath(profileName))
+				alias = promptMissing(reader, env.out, "SSH alias", alias, core.DefaultAlias(githubUser))
 				profile, err = svc.SaveProfile(ctx, core.ProfileInput{
 					Name:       profileName,
 					GitHubUser: githubUser,
@@ -117,7 +117,7 @@ func newInitCommand(env commandEnv) *cobra.Command {
 			}
 
 			if repoSlug == "" {
-				repoSlug = promptDefault(reader, env.out, "GitHub repo slug if no origin remote exists (owner/name)", repoSlug)
+				repoSlug = promptMissing(reader, env.out, "GitHub repo slug if no origin remote exists (owner/name)", repoSlug, "")
 			}
 			report, err := svc.ConfigureRepo(ctx, core.InitOptions{
 				RepoPath:    repoPath,
@@ -162,12 +162,12 @@ func newProfileAddCommand(env commandEnv) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			reader := bufio.NewReader(env.in)
-			name = promptDefault(reader, env.out, "Profile name", name)
-			githubUser = promptDefault(reader, env.out, "GitHub username", defaultString(githubUser, name))
-			gitName = promptDefault(reader, env.out, "Git commit name", defaultString(gitName, githubUser))
-			email = promptDefault(reader, env.out, "Git commit email", email)
-			keyPath = promptDefault(reader, env.out, "SSH key path", defaultString(keyPath, core.DefaultKeyPath(name)))
-			alias = promptDefault(reader, env.out, "SSH alias", defaultString(alias, core.DefaultAlias(githubUser)))
+			name = promptMissing(reader, env.out, "Profile name", name, "")
+			githubUser = promptMissing(reader, env.out, "GitHub username", githubUser, name)
+			gitName = promptMissing(reader, env.out, "Git commit name", gitName, githubUser)
+			email = promptMissing(reader, env.out, "Git commit email", email, "")
+			keyPath = promptMissing(reader, env.out, "SSH key path", keyPath, core.DefaultKeyPath(name))
+			alias = promptMissing(reader, env.out, "SSH alias", alias, core.DefaultAlias(githubUser))
 
 			svc, closeFn, err := openService(ctx, env)
 			if err != nil {
@@ -488,6 +488,13 @@ func promptDefault(r *bufio.Reader, w io.Writer, label, def string) string {
 		return def
 	}
 	return text
+}
+
+func promptMissing(r *bufio.Reader, w io.Writer, label, value, def string) string {
+	if strings.TrimSpace(value) != "" {
+		return value
+	}
+	return promptDefault(r, w, label, def)
 }
 
 func promptYesNo(r *bufio.Reader, w io.Writer, label string, def bool) bool {
