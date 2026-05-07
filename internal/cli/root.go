@@ -30,14 +30,20 @@ func Execute() error {
 		out:    os.Stdout,
 		errOut: os.Stderr,
 	}
-	return newRootCommand(env).Execute()
+	if err := newRootCommand(env).Execute(); err != nil {
+		fmt.Fprintln(env.errOut, formatCLIError(err))
+		return err
+	}
+	return nil
 }
 
 func newRootCommand(env *commandEnv) *cobra.Command {
 	root := &cobra.Command{
-		Use:   "gitu",
-		Short: "Multi GitHub identity manager",
-		Long:  "gituCli isolates GitHub identities per repository using local Git config, SSH aliases, remotes, and hooks.",
+		Use:           "gitu",
+		Short:         "Multi GitHub identity manager",
+		Long:          "gituCli isolates GitHub identities per repository using local Git config, SSH aliases, remotes, and hooks.",
+		SilenceUsage:  true,
+		SilenceErrors: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return textui.Render(env.out)
 		},
@@ -489,13 +495,8 @@ func newAutoCommitCommand(env *commandEnv) *cobra.Command {
 					return err
 				}
 				if delay > 0 {
-					fmt.Fprintf(env.out, "%s waiting %s until %s\n", textui.Muted("[WAIT]"), delay.Round(time.Second), atClock)
-					timer := time.NewTimer(delay)
-					defer timer.Stop()
-					select {
-					case <-cmd.Context().Done():
-						return nil
-					case <-timer.C:
+					if err := waitWithSpinner(cmd.Context(), env.out, delay, fmt.Sprintf("waiting %s until %s", delay.Round(time.Second), atClock)); err != nil {
+						return err
 					}
 				}
 			}

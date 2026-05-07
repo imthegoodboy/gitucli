@@ -79,3 +79,17 @@ func IssueSeverity(severity string) string {
 func KeyValue(key, value string) string {
 	return fmt.Sprintf("%s %s", Muted(key+":"), value)
 }
+
+func ErrorPanel(title, message, suggestion string) string {
+	lines := []string{
+		"+------------------------------------------------------------+",
+		"| " + Error(title),
+		"+------------------------------------------------------------+",
+		"| " + message,
+	}
+	if strings.TrimSpace(suggestion) != "" {
+		lines = append(lines, "| "+Muted("Next:")+" "+suggestion)
+	}
+	lines = append(lines, "+------------------------------------------------------------+")
+	return strings.Join(lines, "\n")
+}
