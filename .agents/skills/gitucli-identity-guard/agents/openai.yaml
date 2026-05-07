@@ -1,0 +1,4 @@
+interface:
+  display_name: "gituCli Identity Guard"
+  short_description: "Guide future agents through gituCli identity safety work."
+  default_prompt: "Use this skill when modifying gituCli identity, SSH, remote, hook, validation, or repair behavior."
