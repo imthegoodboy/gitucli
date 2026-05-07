@@ -97,6 +97,51 @@ func RemoteSetURL(ctx context.Context, repoPath, remoteName, remoteURL string) e
 	return err
 }
 
+func PorcelainStatus(ctx context.Context, repoPath string) (string, error) {
+	out, err := Run(ctx, repoPath, "status", "--porcelain")
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(out), nil
+}
+
+func HasChanges(ctx context.Context, repoPath string) (bool, error) {
+	status, err := PorcelainStatus(ctx, repoPath)
+	if err != nil {
+		return false, err
+	}
+	return status != "", nil
+}
+
+func AddAll(ctx context.Context, repoPath string) error {
+	_, err := Run(ctx, repoPath, "add", "-A")
+	return err
+}
+
+func Commit(ctx context.Context, repoPath, message string) error {
+	_, err := Run(ctx, repoPath, "commit", "-m", message)
+	return err
+}
+
+func Push(ctx context.Context, repoPath, remoteName string) error {
+	if remoteName == "" {
+		remoteName = "origin"
+	}
+	_, err := Run(ctx, repoPath, "push", remoteName)
+	return err
+}
+
+func ShortStatusLines(status string) []string {
+	if strings.TrimSpace(status) == "" {
+		return nil
+	}
+	lines := strings.Split(strings.TrimSpace(status), "\n")
+	for i := range lines {
+		lines[i] = strings.TrimSpace(lines[i])
+	}
+	return lines
+}
+
 func Run(ctx context.Context, repoPath string, args ...string) (string, error) {
 	cmdArgs := append([]string{"-C", repoPath}, args...)
 	cmd := exec.CommandContext(ctx, "git", cmdArgs...)
