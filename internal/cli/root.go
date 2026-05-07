@@ -109,7 +109,7 @@ func newInitCommand(env commandEnv) *cobra.Command {
 			if _, err := os.Stat(profile.SSHKeyPath); err != nil {
 				shouldGenerate := generateKey || promptYesNo(reader, env.out, fmt.Sprintf("SSH key missing at %s. Generate it now?", profile.SSHKeyPath), true)
 				if shouldGenerate {
-					if err := svc.GenerateKey(ctx, profile.Name, false); err != nil {
+					if _, err := svc.GenerateKey(ctx, profile.Name, false); err != nil {
 						return err
 					}
 					fmt.Fprintf(env.out, "Generated SSH key. Add this public key to GitHub account %s:\n%s.pub\n\n", profile.GitHubUser, profile.SSHKeyPath)
