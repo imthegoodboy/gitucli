@@ -113,7 +113,8 @@ func newInitCommand(env *commandEnv) *cobra.Command {
 					if _, err := svc.GenerateKey(ctx, profile.Name, false); err != nil {
 						return err
 					}
-					fmt.Fprintf(env.out, "Generated SSH key. Add this public key to GitHub account %s:\n%s.pub\n\n", profile.GitHubUser, profile.SSHKeyPath)
+					fmt.Fprintf(env.out, "%s Generated SSH key. Add this public key to GitHub account %s:\n%s.pub\n\n",
+						textui.Success("[OK]"), textui.Accent(profile.GitHubUser), profile.SSHKeyPath)
 				}
 			}
 
@@ -187,7 +188,8 @@ func newProfileAddCommand(env *commandEnv) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			fmt.Fprintf(env.out, "Saved profile %s with alias %s\n", p.Name, p.SSHAlias)
+			fmt.Fprintf(env.out, "%s Saved profile %s with alias %s\n",
+				textui.Success("[OK]"), textui.Accent(p.Name), textui.Command(p.SSHAlias))
 			return nil
 		},
 	}
@@ -215,7 +217,8 @@ func newProfileListCommand(env *commandEnv) *cobra.Command {
 				return err
 			}
 			w := tabwriter.NewWriter(env.out, 0, 0, 2, ' ', 0)
-			fmt.Fprintln(w, "NAME\tGITHUB\tEMAIL\tALIAS\tKEY")
+			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n",
+				textui.Muted("NAME"), textui.Muted("GITHUB"), textui.Muted("EMAIL"), textui.Muted("ALIAS"), textui.Muted("KEY"))
 			for _, p := range profiles {
 				fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n", p.Name, p.GitHubUser, p.Email, p.SSHAlias, p.SSHKeyPath)
 			}
@@ -239,8 +242,13 @@ func newProfileShowCommand(env *commandEnv) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			fmt.Fprintf(env.out, "Name: %s\nGitHub: %s\nGit name: %s\nEmail: %s\nAlias: %s\nKey: %s\n",
-				p.Name, p.GitHubUser, p.GitName, p.Email, p.SSHAlias, p.SSHKeyPath)
+			fmt.Fprintf(env.out, "%s\n%s\n%s\n%s\n%s\n%s\n",
+				textui.KeyValue("Name", textui.Accent(p.Name)),
+				textui.KeyValue("GitHub", p.GitHubUser),
+				textui.KeyValue("Git name", p.GitName),
+				textui.KeyValue("Email", p.Email),
+				textui.KeyValue("Alias", textui.Command(p.SSHAlias)),
+				textui.KeyValue("Key", p.SSHKeyPath))
 			return nil
 		},
 	}
@@ -263,7 +271,7 @@ func newProfileRemoveCommand(env *commandEnv) *cobra.Command {
 			if err := svc.SyncSSHConfig(cmd.Context()); err != nil {
 				return err
 			}
-			fmt.Fprintf(env.out, "Removed profile %s\n", args[0])
+			fmt.Fprintf(env.out, "%s Removed profile %s\n", textui.Success("[OK]"), textui.Accent(args[0]))
 			return nil
 		},
 	}
@@ -286,7 +294,8 @@ func newKeyCommand(env *commandEnv) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			fmt.Fprintf(env.out, "Generated SSH key for %s:\n%s\n%s.pub\n", p.Name, p.SSHKeyPath, p.SSHKeyPath)
+			fmt.Fprintf(env.out, "%s Generated SSH key for %s:\n%s\n%s.pub\n",
+				textui.Success("[OK]"), textui.Accent(p.Name), p.SSHKeyPath, p.SSHKeyPath)
 			return nil
 		},
 	}
@@ -373,11 +382,11 @@ func newGuardCommand(env *commandEnv) *cobra.Command {
 			if report.OK {
 				return nil
 			}
-			fmt.Fprintln(env.errOut, "gitu blocked this Git operation because the repo identity is unsafe:")
+			fmt.Fprintln(env.errOut, textui.Error("gitu blocked this Git operation because the repo identity is unsafe:"))
 			for _, issue := range report.Issues {
-				fmt.Fprintf(env.errOut, "- %s\n", issue.Message)
+				fmt.Fprintf(env.errOut, "%s %s\n", textui.IssueSeverity(issue.Severity), issue.Message)
 			}
-			fmt.Fprintf(env.errOut, "Run: gitu repair %q\n", report.RepoPath)
+			fmt.Fprintf(env.errOut, "%s %s\n", textui.Muted("Run:"), textui.Command(fmt.Sprintf("gitu repair %q", report.RepoPath)))
 			return fmt.Errorf("identity guard failed for %s", args[0])
 		},
 	}
@@ -405,9 +414,9 @@ func newDaemonCommand(env *commandEnv) *cobra.Command {
 				}
 				for _, report := range reports {
 					if report.OK {
-						fmt.Fprintf(env.out, "OK %s\n", report.RepoPath)
+						fmt.Fprintf(env.out, "%s %s\n", textui.Success("[OK]"), report.RepoPath)
 					} else {
-						fmt.Fprintf(env.out, "ISSUES %s (%d)\n", report.RepoPath, len(report.Issues))
+						fmt.Fprintf(env.out, "%s %s (%d issue(s))\n", textui.Error("[ISSUES]"), report.RepoPath, len(report.Issues))
 					}
 				}
 				return nil
@@ -460,28 +469,28 @@ func openService(ctx context.Context, env *commandEnv) (*core.Service, func(), e
 
 func printReport(w io.Writer, report core.Report) {
 	if report.OK {
-		fmt.Fprintf(w, "OK: %s is identity-safe", report.RepoPath)
+		fmt.Fprintf(w, "%s %s is identity-safe", textui.Success("[OK]"), report.RepoPath)
 		if report.ProfileName != "" {
-			fmt.Fprintf(w, " for profile %s", report.ProfileName)
+			fmt.Fprintf(w, " for profile %s", textui.Accent(report.ProfileName))
 		}
 		fmt.Fprintln(w)
 		return
 	}
-	fmt.Fprintf(w, "Issues for %s:\n", report.RepoPath)
+	fmt.Fprintf(w, "%s Issues for %s:\n", textui.Error("[FAIL]"), report.RepoPath)
 	for _, issue := range report.Issues {
 		repair := ""
 		if issue.Repairable {
-			repair = " (repairable)"
+			repair = " " + textui.Muted("(repairable)")
 		}
-		fmt.Fprintf(w, "- [%s] %s%s\n", issue.Severity, issue.Message, repair)
+		fmt.Fprintf(w, "%s %s%s\n", textui.IssueSeverity(issue.Severity), issue.Message, repair)
 	}
 }
 
 func promptDefault(r *bufio.Reader, w io.Writer, label, def string) string {
 	if strings.TrimSpace(def) != "" {
-		fmt.Fprintf(w, "%s [%s]: ", label, def)
+		fmt.Fprintf(w, "%s %s %s ", textui.Accent(label), textui.Muted("["+def+"]"), textui.Muted(">"))
 	} else {
-		fmt.Fprintf(w, "%s: ", label)
+		fmt.Fprintf(w, "%s %s ", textui.Accent(label), textui.Muted(">"))
 	}
 	text, _ := r.ReadString('\n')
 	text = strings.TrimSpace(text)
@@ -503,7 +512,7 @@ func promptYesNo(r *bufio.Reader, w io.Writer, label string, def bool) bool {
 	if !def {
 		suffix = "y/N"
 	}
-	fmt.Fprintf(w, "%s [%s]: ", label, suffix)
+	fmt.Fprintf(w, "%s %s %s ", textui.Accent(label), textui.Muted("["+suffix+"]"), textui.Muted(">"))
 	text, _ := r.ReadString('\n')
 	text = strings.ToLower(strings.TrimSpace(text))
 	if text == "" {
