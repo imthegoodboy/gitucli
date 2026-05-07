@@ -22,6 +22,8 @@ Verified:
 - Project-local agent skill validates.
 - CLI root menu exits cleanly in non-interactive terminals.
 - CLI output has clearer colored statuses for success, failure, commands, prompts, and guard errors.
+- CLI errors are centralized into a readable failure panel with next-step suggestions.
+- Scheduled autocommit waits show an animated terminal indicator.
 - Profile input now validates malformed emails and unsafe SSH aliases.
 - Managed SSH config writes are isolated to the marked gituCli block.
 - Repo-local Git config is used; global Git config is not written.

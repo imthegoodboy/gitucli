@@ -51,6 +51,8 @@ Use local 24-hour `HH:MM` time:
 
 If the time already passed today, gituCli waits until that time tomorrow.
 
+While waiting, the CLI shows a small animated wait indicator so you can tell the scheduler is still alive.
+
 ## Commit Repeatedly
 
 Run every 30 minutes:
@@ -113,4 +115,3 @@ For one final checkpoint:
 - It does not store secrets.
 - It does not run in the background after the terminal closes.
 - If there are no changes, it prints a skip message and does nothing.
-

@@ -47,5 +47,5 @@ func Render(w io.Writer) error {
 }
 
 func row(index, command, description string) string {
-	return fmt.Sprintf("%s %s  %s", Muted("["+index+"]"), Command(command), description)
+	return fmt.Sprintf("%s %s %s", Muted("["+index+"]"), Command(fmt.Sprintf("%-28s", command)), description)
 }
