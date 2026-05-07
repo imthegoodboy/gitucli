@@ -64,6 +64,18 @@ gitu repair C:\path\to\project
 gitu daemon
 ```
 
+## Two Accounts On One Laptop
+
+```powershell
+gitu profile add --name startup --github-user startupUser --email founder@startup.com
+gitu init C:\projects\ai-saas --profile startup --repo startupUser/ai-saas --generate-key
+
+gitu profile add --name personal --github-user personalUser --email me@users.noreply.github.com
+gitu init C:\projects\portfolio --profile personal --repo personalUser/portfolio --generate-key
+```
+
+Each repo gets its own local Git email and its own SSH alias remote. You can commit and push in both repos without logging in and out.
+
 ## Safety Notes
 
 - `gitu` never writes global Git config.
@@ -71,3 +83,8 @@ gitu daemon
 - You must add the generated `.pub` key to the matching GitHub account.
 - The daemon watches only repos already initialized by `gitu`.
 
+## More Docs
+
+- `docs/IDENTITY_MODEL.md`: how contribution identity and SSH routing work.
+- `docs/OPERATIONS.md`: validate, repair, daemon, and troubleshooting.
+- `docs/END_TO_END_FLOW.md`: safe dummy-project test flow.
