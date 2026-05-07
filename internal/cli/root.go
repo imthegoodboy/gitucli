@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/parth/gitucli/internal/core"
-	"github.com/parth/gitucli/internal/sshconfig"
 	"github.com/parth/gitucli/internal/storage"
 	"github.com/parth/gitucli/internal/textui"
 	"github.com/spf13/cobra"
@@ -511,8 +510,3 @@ func defaultString(value, def string) string {
 	}
 	return def
 }
-
-func init() {
-	_ = sshconfig.ExpandHome
-}
-
