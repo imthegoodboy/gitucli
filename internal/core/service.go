@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/mail"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -340,11 +341,17 @@ func normalizeProfile(in ProfileInput) (storage.Profile, error) {
 	if email == "" {
 		return storage.Profile{}, fmt.Errorf("git email is required")
 	}
+	if _, err := mail.ParseAddress(email); err != nil {
+		return storage.Profile{}, fmt.Errorf("git email %q is invalid", email)
+	}
 	if keyPath == "" {
 		keyPath = DefaultKeyPath(name)
 	}
 	if alias == "" {
 		alias = DefaultAlias(githubUser)
+	}
+	if alias == "github.com" || strings.ContainsAny(alias, " \t\r\n:/\\") {
+		return storage.Profile{}, fmt.Errorf("SSH alias %q is invalid", alias)
 	}
 
 	return storage.Profile{
